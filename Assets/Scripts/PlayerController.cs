@@ -17,10 +17,10 @@ public class PlayerController : MonoBehaviour
 
     public bool inTopDownMode;
 
-    //this delegate is used to house multiple methods that are to be ran
-    //inside of the FixedUpdate method to make various different "checks"
-    //funnctionally does not differ from individually calling all of the methods inside of
-    //FixedUpdate, but it does keep the method less cluttered
+    // this delegate is used to house multiple methods that are to be ran
+    // inside of the FixedUpdate method to make various different "checks".
+    // Functionally does not differ from individually calling all of the methods inside of
+    // FixedUpdate, but it does keep the method less cluttered
     private delegate void CheckDelegate();
     private CheckDelegate checkDelegate = null;
 
@@ -36,7 +36,7 @@ public class PlayerController : MonoBehaviour
 
     private void FixedUpdate()
     {
-        //contains multiple miscellaneous methods that perform different kinds of "checks" on the player
+        // contains multiple miscellaneous methods that perform different kinds of "checks" on the player
         checkDelegate();
     }
 
@@ -52,8 +52,6 @@ public class PlayerController : MonoBehaviour
         AccountForTimeState();
     }
 
-    //This is very bad form to be doing this through the PlayerController,
-    //but it is the only way to it through the animations to allow timing the platforms raising/lowering
     public void RaisePlatforms()
     {
         PlatformManager.RaisePlatforms();
@@ -64,26 +62,28 @@ public class PlayerController : MonoBehaviour
         PlatformManager.LowerPlatforms();
     }
 
-    //used to check whether time is "stopped"
-    //if so, freezes the character in their current position until time is resumed
-    //must do this instead of manipulating the time scale because other objects need
-    //to be able to move while the player is frozen
+    // used to check whether time is "stopped"
+    // if so, freezes the character in their current position until time is resumed
+    // must do this instead of manipulating the time scale because other objects need
+    // to be able to move while the player is frozen
     public void AccountForTimeState()
     {
         if (GameManager.Instance.TimeStopped)
         {
+            // storing the velocity of the player before time was stopped
             preFreezeVelocity = rb.velocity;
             rb.velocity = Vector3.zero;
             rb.useGravity = false;
         }
         else
         {
+            // giving the player the velocity that they had before time stopped
             rb.velocity = preFreezeVelocity;
             rb.useGravity = true;
         }
     }
 
-    //checks if the player has input to switch to topdown mode
+    // checks if the player has input to switch to topdown mode
     public void CheckCameraToTopDown()
     {
         if (Input.GetKey(KeyCode.Z) && !inTopDownMode)
@@ -95,7 +95,7 @@ public class PlayerController : MonoBehaviour
         }
     }
 
-    //checks if the player has input to switch to sidescroll mode
+    // checks if the player has input to switch to sidescroll mode
     public void CheckCameraToSideScroll()
     {
         if (Input.GetKey(KeyCode.X) && inTopDownMode)
@@ -107,55 +107,62 @@ public class PlayerController : MonoBehaviour
         }
     }   
 
-    //checks if the player is pressing the movement (including jump) keys and moves them accordingly
+    // checks if the player is pressing the movement (including jump) keys and moves them accordingly
     public void CheckMovement()
     {
+        // if time is "stopped" player should not be able to move
         if (!GameManager.Instance.TimeStopped)
         {
-            //creating variables to easily access the rigidbody's velocity on each axis
+            // creating variables to easily access the rigidbody's velocity on each axis
             float velocityX = rb.velocity.x;
             float velocityY = rb.velocity.y;
             float velocityZ = rb.velocity.z;
 
-            //move left
+            // move left
             if (Input.GetKey(KeyCode.LeftArrow) || Input.GetKey(KeyCode.A))
             {
                 rb.velocity = new Vector3(-moveSpeed, velocityY, 0);
             }
 
-            //move right
+            // move right
             if (Input.GetKey(KeyCode.RightArrow) || Input.GetKey(KeyCode.D))
             {
                 rb.velocity = new Vector3(moveSpeed, velocityY, 0);
             }
 
-            //move forward
+            // move forward
             if ((Input.GetKey(KeyCode.UpArrow) || Input.GetKey(KeyCode.W)) && inTopDownMode)
             {
                 rb.velocity = new Vector3(0, velocityY, moveSpeed);
             }
 
-            //move back
+            // move back
             if ((Input.GetKey(KeyCode.DownArrow) || Input.GetKey(KeyCode.S)) && inTopDownMode)
             {
                 rb.velocity = new Vector3(0, velocityY, -moveSpeed);
             }
 
-            //jump
+            // jump
             if (Input.GetKey(KeyCode.Space) && PlayerOnGround() && !inTopDownMode)
             {
                 rb.velocity = new Vector3(velocityX, jumpForce, velocityZ);
             }
 
-            //make the player's velocity zero when no keys are being pressed
-            if (!Input.GetKey(KeyCode.RightArrow) && !Input.GetKey(KeyCode.LeftArrow) && !Input.GetKey(KeyCode.UpArrow) && !Input.GetKey(KeyCode.DownArrow) && !Input.GetKey(KeyCode.S) && !Input.GetKey(KeyCode.W) && !Input.GetKey(KeyCode.D) && !Input.GetKey(KeyCode.A) && !Input.GetKey(KeyCode.Space))
+            // make the player's velocity zero when no keys are being pressed
+            if (!Input.GetKey(KeyCode.RightArrow) && !Input.GetKey(KeyCode.LeftArrow) && 
+                !Input.GetKey(KeyCode.UpArrow) && !Input.GetKey(KeyCode.DownArrow) && 
+                !Input.GetKey(KeyCode.S) && !Input.GetKey(KeyCode.W) && 
+                !Input.GetKey(KeyCode.D) && !Input.GetKey(KeyCode.A) && 
+                !Input.GetKey(KeyCode.Space))
             {
                 rb.velocity = new Vector3(0, velocityY, 0);
             }
         }
     }
 
-    //Lowers the player down to ground level
+    // Lowers the player down to ground level
+    // Used to make sure the player is on the ground
+    // after switching view modes
     public void BringPlayerToGround()
     {
         Ray groundRay = new Ray();
@@ -168,14 +175,14 @@ public class PlayerController : MonoBehaviour
 
         if (Physics.Raycast(groundRay, out hit, 10, 1 << LayerMask.NameToLayer("Ground"), QueryTriggerInteraction.Ignore))
         {
-            var ground = hit.collider.GetComponentInParent<Transform>();
+            Transform ground = hit.collider.GetComponentInParent<Transform>();
             transform.position = new Vector3(transform.position.x,
-                ground.position.y + ground.localScale.y / 2 + poodPood.localScale.y / 2,
-                transform.position.z);
+                                             ground.position.y + ground.localScale.y / 2 + poodPood.localScale.y / 2,
+                                             transform.position.z);
         }
     }
 
-    //checks if there is aa platform below the player and raises them to the full height of the platform
+    // checks if there is a platform below the player and raises them to the full height of the platform
     public void RaisePlayerToPlatformHeight()
     {
         Ray platformRay = new Ray();
@@ -188,10 +195,10 @@ public class PlayerController : MonoBehaviour
 
         if (Physics.Raycast(platformRay, out hit, 3, 1 << LayerMask.NameToLayer("Platform"), QueryTriggerInteraction.Ignore))
         {
-            var platform = hit.collider.GetComponentInParent<Platform>();
+            Platform platform = hit.collider.GetComponentInParent<Platform>();
             transform.position = new Vector3(transform.position.x,
-                platform.OriginalPosition.y + poodPood.localScale.y / 2,
-                transform.position.z);
+                                             platform.OriginalPosition.y + poodPood.localScale.y / 2,
+                                             transform.position.z);
         }
     }
 
