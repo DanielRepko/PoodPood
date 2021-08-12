@@ -8,8 +8,32 @@ public class PlayerController : MonoBehaviour
 {
 
     private Rigidbody rb;
-    public float moveSpeed = 6;
-    public float jumpForce = 6;
+
+    [SerializeField]
+    float _moveSpeed;    
+    public float MoveSpeed
+    {
+        get
+        {
+            if (PlayerOnGround())
+            {
+                return _moveSpeed * 5;
+            }
+            else
+            {
+                return _moveSpeed;
+            }
+        }
+        set { _moveSpeed = value; }
+    }
+
+    [SerializeField]
+    float _jumpForce;
+    public float JumpForce
+    {
+        get { return _jumpForce * 50; }
+        set { _jumpForce = value; }
+    }
     public Transform poodPood;
     public Animator animator;
 
@@ -121,31 +145,31 @@ public class PlayerController : MonoBehaviour
             // move left
             if (Input.GetKey(KeyCode.LeftArrow) || Input.GetKey(KeyCode.A))
             {
-                rb.velocity = new Vector3(-moveSpeed, velocityY, 0);
+                rb.AddForce(new Vector3(-MoveSpeed, 0, -velocityZ * 2), ForceMode.Acceleration);
             }
 
             // move right
             if (Input.GetKey(KeyCode.RightArrow) || Input.GetKey(KeyCode.D))
             {
-                rb.velocity = new Vector3(moveSpeed, velocityY, 0);
+                rb.AddForce(new Vector3(MoveSpeed, 0, -velocityZ * 2), ForceMode.Acceleration);
             }
 
             // move forward
-            if ((Input.GetKey(KeyCode.UpArrow) || Input.GetKey(KeyCode.W)) && inTopDownMode)
+            if ((Input.GetKey(KeyCode.UpArrow) || Input.GetKey(KeyCode.W)))
             {
-                rb.velocity = new Vector3(0, velocityY, moveSpeed);
+                rb.AddForce(new Vector3(-velocityX * 2, 0, MoveSpeed), ForceMode.Acceleration);
             }
 
             // move back
-            if ((Input.GetKey(KeyCode.DownArrow) || Input.GetKey(KeyCode.S)) && inTopDownMode)
+            if ((Input.GetKey(KeyCode.DownArrow) || Input.GetKey(KeyCode.S)))
             {
-                rb.velocity = new Vector3(0, velocityY, -moveSpeed);
+                rb.AddForce(new Vector3(-velocityX * 2, 0, -MoveSpeed), ForceMode.Acceleration);
             }
 
             // jump
             if (Input.GetKey(KeyCode.Space) && PlayerOnGround() && !inTopDownMode)
             {
-                rb.velocity = new Vector3(velocityX, jumpForce, velocityZ);
+                rb.AddForce(new Vector3(0, JumpForce, 0), ForceMode.Acceleration);
             }
 
             // make the player's velocity zero when no keys are being pressed

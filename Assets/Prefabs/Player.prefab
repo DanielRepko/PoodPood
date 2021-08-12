@@ -94,7 +94,6 @@ GameObject:
   - component: {fileID: 5161694501899596189}
   - component: {fileID: 5148385056246383325}
   - component: {fileID: 5054471682433434499}
-  - component: {fileID: 5166354194336093877}
   - component: {fileID: 5166354194336093873}
   m_Layer: 0
   m_Name: Player
@@ -147,29 +146,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 14858de643cc1314db3b3647e9c1c4cd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  moveSpeed: 6
-  jumpForce: 8
+  _moveSpeed: 8
+  _jumpForce: 6
   poodPood: {fileID: 5161906212039263771}
   animator: {fileID: 5166354194336093873}
   inTopDownMode: 0
---- !u!143 &5166354194336093877
-CharacterController:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5167567040609509895}
-  m_Material: {fileID: 0}
-  m_IsTrigger: 0
-  m_Enabled: 1
-  serializedVersion: 2
-  m_Height: 2
-  m_Radius: 0.5
-  m_SlopeLimit: 45
-  m_StepOffset: 0.3
-  m_SkinWidth: 0.08
-  m_MinMoveDistance: 0.001
-  m_Center: {x: 0, y: 0, z: 0}
 --- !u!95 &5166354194336093873
 Animator:
   serializedVersion: 3
