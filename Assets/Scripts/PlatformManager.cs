@@ -35,10 +35,4 @@ public class PlatformManager : MonoBehaviour {
             platform.RaisePlatform();
         }
     }
-
-    private void FixedUpdate()
-    {
-        
-    }
-    
 }

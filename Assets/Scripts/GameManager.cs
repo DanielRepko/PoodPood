@@ -7,8 +7,7 @@ public class GameManager : MonoBehaviour {
     public static GameManager Instance;
 
     public bool TimeStopped = false;
-
-	// Use this for initialization
+	
 	void Start () {
 		if(Instance == null)
         {
@@ -19,10 +18,5 @@ public class GameManager : MonoBehaviour {
             Destroy(gameObject);
         }
         DontDestroyOnLoad(gameObject);
-	}
-	
-	// Update is called once per frame
-	void Update () {
-		
 	}
 }
