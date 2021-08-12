@@ -9,7 +9,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 595941488081170141}
-  - component: {fileID: 3418735395210856910}
   m_Layer: 0
   m_Name: ImpassPlatform_4
   m_TagString: Untagged
@@ -32,18 +31,6 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &3418735395210856910
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3418735395210856911}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 29cd38e92734b7442b5f7d042c5c9db4, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1 &7881691141017812166
 GameObject:
   m_ObjectHideFlags: 0
