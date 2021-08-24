@@ -8,14 +8,57 @@ public class PlayerController : MonoBehaviour
 {
 
     private Rigidbody rb;
-    public float moveSpeed = 6;
-    public float jumpForce = 6;
+
+    [SerializeField]
+    float _moveForce;    
+    public float MoveForce
+    {
+        get
+        {
+            //if(!PlayerOnGround())
+            //{
+            //    return _moveForce / 2;
+            //}
+            //else
+            //{
+            //    return _moveForce;
+            //}
+            return _moveForce;
+        }
+        set { _moveForce = value; }
+    }
+
+    [SerializeField]
+    float _jumpForce;
+    public float JumpForce
+    {
+        get { return _jumpForce * 50; }
+        set { _jumpForce = value; }
+    }
+
+    [SerializeField]
+    float _maxSpeed;
+    public float MaxSpeed
+    {
+        get
+        {            
+            return _maxSpeed;
+        }
+        set { _maxSpeed = value; }
+    }
+
+
     public Transform poodPood;
     public Animator animator;
 
     private Vector3 preFreezeVelocity;
 
     public bool inTopDownMode;
+
+    // used to determine if the player can switch between topdown and 3D mode
+    // cannot go to 3D if over a level 6 normal platform (nor can you jump on top them)
+    // cannot go to topdown if over an impassable platform
+    public bool canSwitchModes;
 
     // this delegate is used to house multiple methods that are to be ran
     // inside of the FixedUpdate method to make various different "checks".
@@ -32,6 +75,7 @@ public class PlayerController : MonoBehaviour
         checkDelegate += CheckCameraToTopDown;
         checkDelegate += CheckCameraToSideScroll;
         checkDelegate += CheckMovement;
+        checkDelegate += CheckCurrentPlatform;
     }
 
     private void FixedUpdate()
@@ -86,7 +130,7 @@ public class PlayerController : MonoBehaviour
     // checks if the player has input to switch to topdown mode
     public void CheckCameraToTopDown()
     {
-        if (Input.GetKey(KeyCode.Z) && !inTopDownMode)
+        if (Input.GetKey(KeyCode.Z) && !inTopDownMode && canSwitchModes)
         {
             FreezeTime();
             inTopDownMode = true;
@@ -98,7 +142,7 @@ public class PlayerController : MonoBehaviour
     // checks if the player has input to switch to sidescroll mode
     public void CheckCameraToSideScroll()
     {
-        if (Input.GetKey(KeyCode.X) && inTopDownMode)
+        if (Input.GetKey(KeyCode.X) && inTopDownMode && canSwitchModes)
         {
             FreezeTime();
             inTopDownMode = false;
@@ -121,44 +165,78 @@ public class PlayerController : MonoBehaviour
             // move left
             if (Input.GetKey(KeyCode.LeftArrow) || Input.GetKey(KeyCode.A))
             {
-                rb.velocity = new Vector3(-moveSpeed, velocityY, 0);
+                rb.AddForce(new Vector3(-MoveForce, 0, -velocityZ * 2), ForceMode.Acceleration);
             }
 
             // move right
             if (Input.GetKey(KeyCode.RightArrow) || Input.GetKey(KeyCode.D))
             {
-                rb.velocity = new Vector3(moveSpeed, velocityY, 0);
+                rb.AddForce(new Vector3(MoveForce, 0, -velocityZ * 2), ForceMode.Acceleration);
             }
 
             // move forward
-            if ((Input.GetKey(KeyCode.UpArrow) || Input.GetKey(KeyCode.W)) && inTopDownMode)
+            if ((Input.GetKey(KeyCode.UpArrow) || Input.GetKey(KeyCode.W)))
             {
-                rb.velocity = new Vector3(0, velocityY, moveSpeed);
+                rb.AddForce(new Vector3(-velocityX * 2, 0, MoveForce), ForceMode.Acceleration);
             }
 
             // move back
-            if ((Input.GetKey(KeyCode.DownArrow) || Input.GetKey(KeyCode.S)) && inTopDownMode)
+            if ((Input.GetKey(KeyCode.DownArrow) || Input.GetKey(KeyCode.S)))
             {
-                rb.velocity = new Vector3(0, velocityY, -moveSpeed);
+                rb.AddForce(new Vector3(-velocityX * 2, 0, -MoveForce), ForceMode.Acceleration);
             }
 
             // jump
             if (Input.GetKey(KeyCode.Space) && PlayerOnGround() && !inTopDownMode)
             {
-                rb.velocity = new Vector3(velocityX, jumpForce, velocityZ);
+                rb.velocity = new Vector3(velocityX, 0, velocityZ);
+                rb.AddForce(new Vector3(0, JumpForce, 0), ForceMode.Acceleration);
             }
 
-            // make the player's velocity zero when no keys are being pressed
-            if (!Input.GetKey(KeyCode.RightArrow) && !Input.GetKey(KeyCode.LeftArrow) && 
-                !Input.GetKey(KeyCode.UpArrow) && !Input.GetKey(KeyCode.DownArrow) && 
-                !Input.GetKey(KeyCode.S) && !Input.GetKey(KeyCode.W) && 
-                !Input.GetKey(KeyCode.D) && !Input.GetKey(KeyCode.A) && 
-                !Input.GetKey(KeyCode.Space))
+            if(Mathf.Abs(velocityX) > MaxSpeed)
             {
-                rb.velocity = new Vector3(0, velocityY, 0);
+                rb.velocity = new Vector3(MaxSpeed * rb.velocity.normalized.x, velocityY, velocityZ);
+            }
+                
+            if(Mathf.Abs(velocityZ) > MaxSpeed)
+            {
+                rb.velocity = new Vector3(velocityX, velocityY, MaxSpeed * rb.velocity.normalized.z);
             }
         }
     }
+
+    // Checks what kind of platform the player is on
+    public void CheckCurrentPlatform()
+    {
+        Ray ray = new Ray();
+        ray.origin = poodPood.position;
+        ray.direction = new Vector3(0, -1, 0);
+
+        Debug.DrawRay(ray.origin, new Vector3(0, -10, 0), Color.blue);
+
+        RaycastHit hit;
+
+        if (Physics.Raycast(ray, out hit, 10, 1 << LayerMask.NameToLayer("Platform"), QueryTriggerInteraction.Ignore))
+        {
+            if(hit.transform.CompareTag("Impassable"))
+            {
+                canSwitchModes = false;
+            }
+            else if(hit.transform.CompareTag("Passable") && hit.transform.parent.name.EndsWith("6"))
+            {
+                canSwitchModes = false;
+            }
+            else
+            {
+                canSwitchModes = true;
+            }
+        }
+        else
+        {
+            canSwitchModes = true;
+        }
+    }
+
 
     // Lowers the player down to ground level
     // Used to make sure the player is on the ground
@@ -208,9 +286,7 @@ public class PlayerController : MonoBehaviour
         groundRay.origin = poodPood.position;
         groundRay.direction = new Vector3(0, -1, 0);
 
-        Debug.DrawRay(groundRay.origin, new Vector3(0, -0.5f, 0), Color.green);
-
-        if(Physics.Raycast(groundRay, 0.5f, 1 << LayerMask.NameToLayer("Ground"), QueryTriggerInteraction.Ignore) || Physics.Raycast(groundRay, 0.5f, 1 << LayerMask.NameToLayer("Platform"), QueryTriggerInteraction.Ignore))
+        if(Physics.SphereCast(groundRay, 0.4f, 0.07f, (1 << LayerMask.NameToLayer("Ground") | 1 << LayerMask.NameToLayer("Platform")), QueryTriggerInteraction.Ignore))
         {
             return true;
         }
@@ -220,5 +296,11 @@ public class PlayerController : MonoBehaviour
         }
     }
 
-    
+    void OnDrawGizmosSelected()
+    {
+        // Draw a yellow sphere at the transform's position
+        Gizmos.color = Color.blue;
+        Gizmos.DrawSphere(new Vector3(poodPood.position.x, poodPood.position.y - .07f, poodPood.position.z), .4f);
+    }
+
 }
