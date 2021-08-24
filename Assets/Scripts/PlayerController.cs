@@ -41,6 +41,11 @@ public class PlayerController : MonoBehaviour
 
     public bool inTopDownMode;
 
+    // used to determine if the player can switch between topdown and 3D mode
+    // cannot go to 3D if over a level 6 normal platform (nor can you jump on top them)
+    // cannot go to topdown if over an impassable platform
+    public bool canSwitchModes;
+
     // this delegate is used to house multiple methods that are to be ran
     // inside of the FixedUpdate method to make various different "checks".
     // Functionally does not differ from individually calling all of the methods inside of
@@ -56,6 +61,7 @@ public class PlayerController : MonoBehaviour
         checkDelegate += CheckCameraToTopDown;
         checkDelegate += CheckCameraToSideScroll;
         checkDelegate += CheckMovement;
+        checkDelegate += CheckCurrentPlatform;
     }
 
     private void FixedUpdate()
@@ -110,7 +116,7 @@ public class PlayerController : MonoBehaviour
     // checks if the player has input to switch to topdown mode
     public void CheckCameraToTopDown()
     {
-        if (Input.GetKey(KeyCode.Z) && !inTopDownMode)
+        if (Input.GetKey(KeyCode.Z) && !inTopDownMode && canSwitchModes)
         {
             FreezeTime();
             inTopDownMode = true;
@@ -122,7 +128,7 @@ public class PlayerController : MonoBehaviour
     // checks if the player has input to switch to sidescroll mode
     public void CheckCameraToSideScroll()
     {
-        if (Input.GetKey(KeyCode.X) && inTopDownMode)
+        if (Input.GetKey(KeyCode.X) && inTopDownMode && canSwitchModes)
         {
             FreezeTime();
             inTopDownMode = false;
@@ -183,6 +189,39 @@ public class PlayerController : MonoBehaviour
             }
         }
     }
+
+    // Checks what kind of platform the player is on
+    public void CheckCurrentPlatform()
+    {
+        Ray ray = new Ray();
+        ray.origin = poodPood.position;
+        ray.direction = new Vector3(0, -1, 0);
+
+        Debug.DrawRay(ray.origin, new Vector3(0, -10, 0), Color.blue);
+
+        RaycastHit hit;
+
+        if (Physics.Raycast(ray, out hit, 10, 1 << LayerMask.NameToLayer("Platform"), QueryTriggerInteraction.Ignore))
+        {
+            if(hit.transform.CompareTag("Impassable"))
+            {
+                canSwitchModes = false;
+            }
+            else if(hit.transform.CompareTag("Passable") && hit.transform.parent.name.EndsWith("6"))
+            {
+                canSwitchModes = false;
+            }
+            else
+            {
+                canSwitchModes = true;
+            }
+        }
+        else
+        {
+            canSwitchModes = true;
+        }
+    }
+
 
     // Lowers the player down to ground level
     // Used to make sure the player is on the ground
