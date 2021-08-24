@@ -10,21 +10,22 @@ public class PlayerController : MonoBehaviour
     private Rigidbody rb;
 
     [SerializeField]
-    float _moveSpeed;    
-    public float MoveSpeed
+    float _moveForce;    
+    public float MoveForce
     {
         get
         {
-            if (PlayerOnGround())
-            {
-                return _moveSpeed * 5;
-            }
-            else
-            {
-                return _moveSpeed;
-            }
+            //if(!PlayerOnGround())
+            //{
+            //    return _moveForce / 2;
+            //}
+            //else
+            //{
+            //    return _moveForce;
+            //}
+            return _moveForce;
         }
-        set { _moveSpeed = value; }
+        set { _moveForce = value; }
     }
 
     [SerializeField]
@@ -34,6 +35,19 @@ public class PlayerController : MonoBehaviour
         get { return _jumpForce * 50; }
         set { _jumpForce = value; }
     }
+
+    [SerializeField]
+    float _maxSpeed;
+    public float MaxSpeed
+    {
+        get
+        {            
+            return _maxSpeed;
+        }
+        set { _maxSpeed = value; }
+    }
+
+
     public Transform poodPood;
     public Animator animator;
 
@@ -151,41 +165,42 @@ public class PlayerController : MonoBehaviour
             // move left
             if (Input.GetKey(KeyCode.LeftArrow) || Input.GetKey(KeyCode.A))
             {
-                rb.AddForce(new Vector3(-MoveSpeed, 0, -velocityZ * 2), ForceMode.Acceleration);
+                rb.AddForce(new Vector3(-MoveForce, 0, -velocityZ * 2), ForceMode.Acceleration);
             }
 
             // move right
             if (Input.GetKey(KeyCode.RightArrow) || Input.GetKey(KeyCode.D))
             {
-                rb.AddForce(new Vector3(MoveSpeed, 0, -velocityZ * 2), ForceMode.Acceleration);
+                rb.AddForce(new Vector3(MoveForce, 0, -velocityZ * 2), ForceMode.Acceleration);
             }
 
             // move forward
             if ((Input.GetKey(KeyCode.UpArrow) || Input.GetKey(KeyCode.W)))
             {
-                rb.AddForce(new Vector3(-velocityX * 2, 0, MoveSpeed), ForceMode.Acceleration);
+                rb.AddForce(new Vector3(-velocityX * 2, 0, MoveForce), ForceMode.Acceleration);
             }
 
             // move back
             if ((Input.GetKey(KeyCode.DownArrow) || Input.GetKey(KeyCode.S)))
             {
-                rb.AddForce(new Vector3(-velocityX * 2, 0, -MoveSpeed), ForceMode.Acceleration);
+                rb.AddForce(new Vector3(-velocityX * 2, 0, -MoveForce), ForceMode.Acceleration);
             }
 
             // jump
             if (Input.GetKey(KeyCode.Space) && PlayerOnGround() && !inTopDownMode)
             {
+                rb.velocity = new Vector3(velocityX, 0, velocityZ);
                 rb.AddForce(new Vector3(0, JumpForce, 0), ForceMode.Acceleration);
             }
 
-            // make the player's velocity zero when no keys are being pressed
-            if (!Input.GetKey(KeyCode.RightArrow) && !Input.GetKey(KeyCode.LeftArrow) && 
-                !Input.GetKey(KeyCode.UpArrow) && !Input.GetKey(KeyCode.DownArrow) && 
-                !Input.GetKey(KeyCode.S) && !Input.GetKey(KeyCode.W) && 
-                !Input.GetKey(KeyCode.D) && !Input.GetKey(KeyCode.A) && 
-                !Input.GetKey(KeyCode.Space))
+            if(Mathf.Abs(velocityX) > MaxSpeed)
             {
-                rb.velocity = new Vector3(0, velocityY, 0);
+                rb.velocity = new Vector3(MaxSpeed * rb.velocity.normalized.x, velocityY, velocityZ);
+            }
+                
+            if(Mathf.Abs(velocityZ) > MaxSpeed)
+            {
+                rb.velocity = new Vector3(velocityX, velocityY, MaxSpeed * rb.velocity.normalized.z);
             }
         }
     }
@@ -271,9 +286,7 @@ public class PlayerController : MonoBehaviour
         groundRay.origin = poodPood.position;
         groundRay.direction = new Vector3(0, -1, 0);
 
-        Debug.DrawRay(groundRay.origin, new Vector3(0, -0.5f, 0), Color.green);
-
-        if(Physics.Raycast(groundRay, 0.5f, 1 << LayerMask.NameToLayer("Ground"), QueryTriggerInteraction.Ignore) || Physics.Raycast(groundRay, 0.5f, 1 << LayerMask.NameToLayer("Platform"), QueryTriggerInteraction.Ignore))
+        if(Physics.SphereCast(groundRay, 0.4f, 0.07f, (1 << LayerMask.NameToLayer("Ground") | 1 << LayerMask.NameToLayer("Platform")), QueryTriggerInteraction.Ignore))
         {
             return true;
         }
@@ -283,5 +296,11 @@ public class PlayerController : MonoBehaviour
         }
     }
 
-    
+    void OnDrawGizmosSelected()
+    {
+        // Draw a yellow sphere at the transform's position
+        Gizmos.color = Color.blue;
+        Gizmos.DrawSphere(new Vector3(poodPood.position.x, poodPood.position.y - .07f, poodPood.position.z), .4f);
+    }
+
 }
