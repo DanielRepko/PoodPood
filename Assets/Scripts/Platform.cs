@@ -42,6 +42,7 @@ public class Platform : MonoBehaviour {
         if (transform.position == targetPosition)
         {
             platformAdjuster = null;
+            transform.position = targetPosition;
         }
     }
 
