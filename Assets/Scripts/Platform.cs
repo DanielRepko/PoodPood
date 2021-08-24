@@ -23,7 +23,7 @@ public class Platform : MonoBehaviour {
     {
         // Need to use a delegate to run PlatformAdjuster() because SmoothDamp needs to run in FixedUpdate to work
         // Only running the platformAdjuster delegate if it contains a method
-        // This is not entirely necessary, but it saves from having the method continuosly run in the background
+        // This is not entirely necessary, but it saves from having the method continuously run in the background
         // even when the platform is already in its target position        
         if (platformAdjuster != null)
         {            
@@ -42,6 +42,7 @@ public class Platform : MonoBehaviour {
         if (transform.position == targetPosition)
         {
             platformAdjuster = null;
+            transform.position = targetPosition;
         }
     }
 

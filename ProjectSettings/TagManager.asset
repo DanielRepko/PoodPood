@@ -5,7 +5,8 @@ TagManager:
   serializedVersion: 2
   tags:
   - Ground
-  - Platform
+  - Impassable
+  - Passable
   layers:
   - Default
   - TransparentFX

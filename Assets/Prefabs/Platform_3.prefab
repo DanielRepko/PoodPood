@@ -58,7 +58,7 @@ GameObject:
   - component: {fileID: 8820038123669188269}
   m_Layer: 10
   m_Name: Platform
-  m_TagString: Platform
+  m_TagString: Passable
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -133,7 +133,7 @@ BoxCollider:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8820038123669188275}
-  m_Material: {fileID: 13400000, guid: aac741833a5fd1c46962ae49bedd3f78, type: 2}
+  m_Material: {fileID: 0}
   m_IsTrigger: 0
   m_Enabled: 1
   serializedVersion: 2
