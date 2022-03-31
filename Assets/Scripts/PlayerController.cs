@@ -15,14 +15,6 @@ public class PlayerController : MonoBehaviour
     {
         get
         {
-            //if(!PlayerOnGround())
-            //{
-            //    return _moveForce / 2;
-            //}
-            //else
-            //{
-            //    return _moveForce;
-            //}
             return _moveForce;
         }
         set { _moveForce = value; }
@@ -71,7 +63,7 @@ public class PlayerController : MonoBehaviour
     // Use this for initialization
     void Start()
     {
-        rb = GetComponent<Rigidbody>();
+        rb = GetComponentInChildren<Rigidbody>();
         checkDelegate += CheckCameraToTopDown;
         checkDelegate += CheckCameraToSideScroll;
         checkDelegate += CheckMovement;

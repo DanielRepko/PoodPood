@@ -92,7 +92,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 5161694501899596189}
-  - component: {fileID: 5148385056246383325}
   - component: {fileID: 5054471682433434499}
   - component: {fileID: 5166354194336093873}
   m_Layer: 0
@@ -118,22 +117,6 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!54 &5148385056246383325
-Rigidbody:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5167567040609509895}
-  serializedVersion: 2
-  m_Mass: 1
-  m_Drag: 2
-  m_AngularDrag: 0.05
-  m_UseGravity: 1
-  m_IsKinematic: 0
-  m_Interpolate: 1
-  m_Constraints: 112
-  m_CollisionDetection: 0
 --- !u!114 &5054471682433434499
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -146,9 +129,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 14858de643cc1314db3b3647e9c1c4cd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _moveForce: 25
-  _jumpForce: 11
-  _maxSpeed: 4
+  _moveForce: 20
+  _jumpForce: 9
+  _maxSpeed: 3
   poodPood: {fileID: 5161906212039263771}
   animator: {fileID: 5166354194336093873}
   inTopDownMode: 0
@@ -184,6 +167,7 @@ GameObject:
   - component: {fileID: 5172987463751984403}
   - component: {fileID: 5181302076615360573}
   - component: {fileID: 492931157}
+  - component: {fileID: 1132445047}
   m_Layer: 11
   m_Name: Pood Pood
   m_TagString: Player
@@ -267,3 +251,19 @@ SphereCollider:
   serializedVersion: 2
   m_Radius: 0.5
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!54 &1132445047
+Rigidbody:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5167721610696268875}
+  serializedVersion: 2
+  m_Mass: 1
+  m_Drag: 2
+  m_AngularDrag: 0.05
+  m_UseGravity: 1
+  m_IsKinematic: 0
+  m_Interpolate: 1
+  m_Constraints: 112
+  m_CollisionDetection: 0
