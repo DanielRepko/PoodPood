@@ -40,15 +40,14 @@ public class PlayerController : MonoBehaviour
     }
 
 
-    public Transform poodPood;
-    public Animator animator;
+    private Animator animator;
 
     private Vector3 preFreezeVelocity;
 
     public bool inTopDownMode;
 
     // used to determine if the player can switch between topdown and 3D mode
-    // cannot go to 3D if over a level 6 normal platform (nor can you jump on top them)
+    // cannot go to 3D if over a level 6 normal platform (nor can you jump on top of them)
     // cannot go to topdown if over an impassable platform
     public bool canSwitchModes;
 
@@ -201,7 +200,7 @@ public class PlayerController : MonoBehaviour
     public void CheckCurrentPlatform()
     {
         Ray ray = new Ray();
-        ray.origin = poodPood.position;
+        ray.origin = transform.position;
         ray.direction = new Vector3(0, -1, 0);
 
         Debug.DrawRay(ray.origin, new Vector3(0, -10, 0), Color.blue);
@@ -236,7 +235,7 @@ public class PlayerController : MonoBehaviour
     public void BringPlayerToGround()
     {
         Ray groundRay = new Ray();
-        groundRay.origin = poodPood.position;
+        groundRay.origin = transform.position;
         groundRay.direction = new Vector3(0, -1, 0);
 
         Debug.DrawRay(groundRay.origin, new Vector3(0, -10, 0), Color.green);
@@ -247,7 +246,7 @@ public class PlayerController : MonoBehaviour
         {
             Transform ground = hit.collider.GetComponentInParent<Transform>();
             transform.position = new Vector3(transform.position.x,
-                                             ground.position.y + ground.localScale.y / 2 + poodPood.localScale.y / 2,
+                                             ground.position.y + ground.localScale.y / 2 + transform.localScale.y / 2,
                                              transform.position.z);
         }
     }
@@ -256,7 +255,7 @@ public class PlayerController : MonoBehaviour
     public void RaisePlayerToPlatformHeight()
     {
         Ray platformRay = new Ray();
-        platformRay.origin = poodPood.position;
+        platformRay.origin = transform.position;
         platformRay.direction = new Vector3(0, -1, 0);
 
         Debug.DrawRay(platformRay.origin, new Vector3(0, -3, 0), Color.green);
@@ -267,7 +266,7 @@ public class PlayerController : MonoBehaviour
         {
             Platform platform = hit.collider.GetComponentInParent<Platform>();
             transform.position = new Vector3(transform.position.x,
-                                             platform.OriginalPosition.y + poodPood.localScale.y / 2,
+                                             platform.OriginalPosition.y + transform.localScale.y / 2,
                                              transform.position.z);
         }
     }
@@ -275,7 +274,7 @@ public class PlayerController : MonoBehaviour
     public bool PlayerOnGround()
     {
         Ray groundRay = new Ray();
-        groundRay.origin = poodPood.position;
+        groundRay.origin = transform.position;
         groundRay.direction = new Vector3(0, -1, 0);
 
         if(Physics.SphereCast(groundRay, 0.4f, 0.07f, (1 << LayerMask.NameToLayer("Ground") | 1 << LayerMask.NameToLayer("Platform")), QueryTriggerInteraction.Ignore))
@@ -292,7 +291,7 @@ public class PlayerController : MonoBehaviour
     {
         // Draw a yellow sphere at the transform's position
         Gizmos.color = Color.blue;
-        Gizmos.DrawSphere(new Vector3(poodPood.position.x, poodPood.position.y - .07f, poodPood.position.z), .4f);
+        Gizmos.DrawSphere(new Vector3(transform.position.x, transform.position.y - .07f, transform.position.z), .4f);
     }
 
 }
