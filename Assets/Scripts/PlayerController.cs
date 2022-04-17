@@ -39,6 +39,8 @@ public class PlayerController : MonoBehaviour
         set { _maxSpeed = value; }
     }
 
+    [SerializeField]
+    Transform cameraTransform;
 
     private Animator animator;
 
@@ -62,7 +64,7 @@ public class PlayerController : MonoBehaviour
     // Use this for initialization
     void Start()
     {
-        rb = GetComponentInChildren<Rigidbody>();
+        rb = GetComponent<Rigidbody>();
         checkDelegate += CheckCameraToTopDown;
         checkDelegate += CheckCameraToSideScroll;
         checkDelegate += CheckMovement;
@@ -153,9 +155,13 @@ public class PlayerController : MonoBehaviour
             float velocityY = rb.velocity.y;
             float velocityZ = rb.velocity.z;
 
+            //Debug.Log(cameraTransform.right);
+
+
             // move left
             if (Input.GetKey(KeyCode.LeftArrow) || Input.GetKey(KeyCode.A))
             {
+                /*rb.AddForce(new Vector3(-MoveForce, 0, -velocityZ * 2), ForceMode.Acceleration);*/
                 rb.AddForce(new Vector3(-MoveForce, 0, -velocityZ * 2), ForceMode.Acceleration);
             }
 
@@ -193,6 +199,8 @@ public class PlayerController : MonoBehaviour
             {
                 rb.velocity = new Vector3(velocityX, velocityY, MaxSpeed * rb.velocity.normalized.z);
             }
+
+            transform.LookAt(transform.position + new Vector3(velocityX, 0, velocityZ).normalized);
         }
     }
 
