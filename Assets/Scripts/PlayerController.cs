@@ -10,14 +10,14 @@ public class PlayerController : MonoBehaviour
     private Rigidbody rb;
 
     [SerializeField]
-    float _moveForce;    
-    public float MoveForce
+    float _moveSpeed;    
+    public float MoveSpeed
     {
         get
         {
-            return _moveForce;
+            return _moveSpeed;
         }
-        set { _moveForce = value; }
+        set { _moveSpeed = value; }
     }
 
     [SerializeField]
@@ -155,41 +155,45 @@ public class PlayerController : MonoBehaviour
             float velocityY = rb.velocity.y;
             float velocityZ = rb.velocity.z;
 
-            //Debug.Log(cameraTransform.right);
+            Vector3 cameraRight = new Vector3(cameraTransform.right.x, 0, cameraTransform.right.z);
+            Vector3 cameraForward = new Vector3(cameraTransform.forward.x, 0, cameraTransform.forward.z);
 
+
+
+            // move right
+            if (Input.GetKey(KeyCode.RightArrow) || Input.GetKey(KeyCode.D))
+            {
+                /*rb.AddForce(new Vector3(MoveForce, 0, -velocityZ * 2), ForceMode.Acceleration);*/
+                rb.AddForce(cameraRight * MoveSpeed, ForceMode.Acceleration);
+            }
 
             // move left
             if (Input.GetKey(KeyCode.LeftArrow) || Input.GetKey(KeyCode.A))
             {
                 /*rb.AddForce(new Vector3(-MoveForce, 0, -velocityZ * 2), ForceMode.Acceleration);*/
-                rb.AddForce(new Vector3(-MoveForce, 0, -velocityZ * 2), ForceMode.Acceleration);
-            }
-
-            // move right
-            if (Input.GetKey(KeyCode.RightArrow) || Input.GetKey(KeyCode.D))
-            {
-                rb.AddForce(new Vector3(MoveForce, 0, -velocityZ * 2), ForceMode.Acceleration);
+                rb.AddForce(-cameraRight * MoveSpeed, ForceMode.Acceleration);
             }
 
             // move forward
             if ((Input.GetKey(KeyCode.UpArrow) || Input.GetKey(KeyCode.W)))
             {
-                rb.AddForce(new Vector3(-velocityX * 2, 0, MoveForce), ForceMode.Acceleration);
+                rb.AddForce(cameraForward * MoveSpeed, ForceMode.Acceleration);
             }
 
             // move back
             if ((Input.GetKey(KeyCode.DownArrow) || Input.GetKey(KeyCode.S)))
             {
-                rb.AddForce(new Vector3(-velocityX * 2, 0, -MoveForce), ForceMode.Acceleration);
+                rb.AddForce(-cameraForward * MoveSpeed, ForceMode.Acceleration);
             }
 
             // jump
-            if (Input.GetKey(KeyCode.Space) && PlayerOnGround() && !inTopDownMode)
+            if (Input.GetKeyDown(KeyCode.Space) && PlayerOnGround() && !inTopDownMode)
             {
-                rb.velocity = new Vector3(velocityX, 0, velocityZ);
+                rb.velocity = new Vector3(velocityX, 0, velocityZ); // this keeps the player from getting bouncy if they start bunny hopping
                 rb.AddForce(new Vector3(0, JumpForce, 0), ForceMode.Acceleration);
             }
 
+            // making sure the player can't go too fast when moving in the air
             if(Mathf.Abs(velocityX) > MaxSpeed)
             {
                 rb.velocity = new Vector3(MaxSpeed * rb.velocity.normalized.x, velocityY, velocityZ);

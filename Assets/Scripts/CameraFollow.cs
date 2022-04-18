@@ -10,6 +10,9 @@ public class CameraFollow : MonoBehaviour
     [SerializeField]
     private float distanceFromPlayer;
 
+    private Vector3 currentVelocity = Vector3.zero;
+    private Vector3 targetPosition;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -21,6 +24,9 @@ public class CameraFollow : MonoBehaviour
     {   
         // moving the camera to look at and follow the player relative to the center of the level
         transform.LookAt(player);
-        transform.position = player.position + Vector3.Normalize(player.position - level.position) * distanceFromPlayer;
+
+        targetPosition = player.position + Vector3.Normalize(player.position - level.position) * distanceFromPlayer;
+
+        transform.position = Vector3.SmoothDamp(transform.position, targetPosition, ref currentVelocity, .3f);
     }
 }
